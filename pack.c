@@ -82,6 +82,7 @@ int main_pack(){
 		strprefix("nop", line) ||
 		strprefix("#", line)){
 			fputc(0, stdout);
+			goto end;
 		}
 
 	if(strprefix("i8",line)){
