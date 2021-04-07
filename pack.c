@@ -102,6 +102,7 @@ int main_pack(){
 		unsigned_int = strtoull(line+3, NULL, 0) & 0xff; /*Attempt */
 		if(unsigned_int < 7 || unsigned_int > 255) goto end;; /*Syntax Error*/
 		fputc(unsigned_int, stdout);
+		goto end;
 	}
 
 	if(strprefix("i8",line)){
