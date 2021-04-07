@@ -1,0 +1,8 @@
+# Simple, Efficient, Endian-agnostic integer packer
+
+Written for 8, 16, and 32 bit integer types.
+
+Could be optimized to use only the bottom three bits of a char
+for the token.
+
+~DMHSW
