@@ -16,6 +16,7 @@ tokens-
 4 = u16
 5 = i32
 6 = u32
+7 - 255 = token
 */
 
 int main_unpack(){
@@ -23,29 +24,39 @@ int main_unpack(){
 		unsigned char tok = fgetc(stdin);
 		if(tok == 0) {
 			printf("nop\n");
+			continue;
 		}
-		if(tok > 6) {puts("\n#SYNTAX ERROR.\n");return 1;}
+		if(tok > 6) {
+			printf("tok %u\n", tok);
+			continue;
+		}
 		if(tok == 1){ /*i8 data type*/
-			int8_t val = fgetc(stdin); /*No conversion required.*/
-			printf("i8 %d\n", (int)val);
+			uint8_t val = fgetc(stdin); /*No conversion required.*/
+			int8_t val_signed;
+			memcpy(&val_signed, &val, sizeof(int8_t));
+			printf("i8 %d\n", (int)val_signed);
+			continue;
 		}
 		if(tok == 2){ /*u8 data type*/
 			uint8_t val = fgetc(stdin);
 			printf("u8 %u\n", (unsigned int)val);
+			continue;
 		}
 		if(tok == 3){ /*i16 data type*/
-			int16_t val = 0;
+			uint16_t val = 0;
 			val = ((uint16_t)fgetc(stdin)) * 256; /*Upper half*/
 			val += ((uint16_t)fgetc(stdin)); /*Lower half.*/
 			int16_t val_signed;
 			memcpy(&val_signed, &val, sizeof(uint16_t));
 			printf("i16 %d\n", (int)val_signed);
+			continue;
 		}
 		if(tok == 4){ /*u16 data type*/
 			uint16_t val = 0;
 			val = ((uint16_t)fgetc(stdin)) * 256; /*Upper half*/
 			val += ((uint16_t)fgetc(stdin)); /*Lower half.*/
 			printf("u16 %u\n", (unsigned int)val);
+			continue;
 		}
 
 		if(tok == 5){ /*i32 data type*/
@@ -57,6 +68,7 @@ int main_unpack(){
 			int32_t val_signed;
 			memcpy(&val_signed, &val, sizeof(uint32_t));
 			printf("i32 %d\n", (int)val_signed);
+			continue;
 		}
 		if(tok == 6){ /*u32 data type*/
 			uint32_t val = 0;
@@ -65,6 +77,7 @@ int main_unpack(){
 			val += ((uint32_t)fgetc(stdin)) * 256; /*Upper half*/
 			val += ((uint32_t)fgetc(stdin)); /*Bottom.*/
 			printf("u32 %u\n", (unsigned int)val);
+			continue;
 		}
 	}
 	puts("#END OF AUTOMATICALLY PARSED FILE");
@@ -84,9 +97,15 @@ int main_pack(){
 			fputc(0, stdout);
 			goto end;
 		}
+	if(strprefix("tok", line)){
+		if(strlen(line) < 4) goto end; /*Invalid line- must contain at least 3 characters.*/
+		unsigned_int = strtoull(line+3, NULL, 0) & 0xff; /*Attempt */
+		if(unsigned_int < 7 || unsigned_int > 255) continue; /*Syntax Error*/
+		fputc(unsigned_int, stdout);
+	}
 
 	if(strprefix("i8",line)){
-		if(strlen(line) < 1) goto end; /*Invalid line- must contain at least 3 characters.*/
+		if(strlen(line) < 3) goto end; /*Invalid line- must contain at least 3 characters.*/
 		signed_int = strtoll(line+3, NULL, 0); /*Attempt */
 		memcpy(&unsigned_int, &signed_int, sizeof(long long));
 		/*write out token*/
@@ -95,7 +114,7 @@ int main_pack(){
 		goto end;
 	}
 	if(strprefix("u8",line)){
-		if(strlen(line) < 2) goto end; /*Invalid line- must contain at least 3 characters.*/
+		if(strlen(line) < 3) goto end; /*Invalid line- must contain at least 3 characters.*/
 		unsigned_int = strtoull(line+3, NULL, 0); /*Attempt */
 		/*write out token*/
 		fputc(2, stdout);
@@ -159,6 +178,7 @@ int main_pack(){
 
 
 int main(int argc, char** argv){
+	(void)argv;
 	if(argc < 2)
 		return main_pack();
 	puts("#AUTOMATICALLY UNPACKED FILE- GENERATED FROM TOKENIZED FORM");
