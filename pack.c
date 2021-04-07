@@ -91,16 +91,16 @@ int main_pack(){
 	while(!feof(stdin)){
 		char* line = read_until_terminator_alloced(stdin, &lenout, '\n', 10);
 		if(line == NULL) return 1; //Failed malloc.
+		if(strprefix("#", line)) goto end;
 		if(strlen(line) < 1 || strprefix("NOP", line) ||
-		strprefix("nop", line) ||
-		strprefix("#", line)){
+		strprefix("nop", line)){
 			fputc(0, stdout);
 			goto end;
 		}
 	if(strprefix("tok", line)){
 		if(strlen(line) < 4) goto end; /*Invalid line- must contain at least 3 characters.*/
 		unsigned_int = strtoull(line+3, NULL, 0) & 0xff; /*Attempt */
-		if(unsigned_int < 7 || unsigned_int > 255) continue; /*Syntax Error*/
+		if(unsigned_int < 7 || unsigned_int > 255) goto end;; /*Syntax Error*/
 		fputc(unsigned_int, stdout);
 	}
 
