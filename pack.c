@@ -85,9 +85,9 @@ int main_unpack(){
 
 
 int main_pack(){
-	long long signed_int;
-	unsigned long long unsigned_int;
-	unsigned long long lenout;
+	long signed_int;
+	unsigned long unsigned_int;
+	unsigned long lenout;
 	while(!feof(stdin)){
 		char* line = read_until_terminator_alloced(stdin, &lenout, '\n', 10);
 		if(line == NULL) return 1; //Failed malloc.
@@ -108,7 +108,7 @@ int main_pack(){
 	if(strprefix("i8",line)){
 		if(strlen(line) < 3) goto end; /*Invalid line- must contain at least 3 characters.*/
 		signed_int = strtoll(line+3, NULL, 0); /*Attempt */
-		memcpy(&unsigned_int, &signed_int, sizeof(long long));
+		memcpy(&unsigned_int, &signed_int, sizeof(long));
 		/*write out token*/
 		fputc(1, stdout);
 		fputc((unsigned_int)&0xff, stdout);
@@ -127,7 +127,7 @@ int main_pack(){
 		if(strprefix("i16",line)){
 			if(strlen(line) < 4) goto end; /*Invalid line- must contain at least 4 characters.*/
 			signed_int = strtoll(line+4, NULL, 0); /*Attempt */
-			memcpy(&unsigned_int, &signed_int, sizeof(long long));
+			memcpy(&unsigned_int, &signed_int, sizeof(long));
 			unsigned_int &= 0xFFFF;
 			/*write out token*/
 			fputc(3, stdout);
@@ -150,7 +150,7 @@ int main_pack(){
 		if(strprefix("i32",line)){
 			if(strlen(line) < 4) goto end; /*Invalid line- must contain at least 4 characters.*/
 			signed_int = strtoll(line+4, NULL, 0); /*Attempt */
-			memcpy(&unsigned_int, &signed_int, sizeof(long long));
+			memcpy(&unsigned_int, &signed_int, sizeof(long));
 			/*write out token*/
 			fputc(5, stdout);
 			fputc((unsigned_int/(256*256*256))&0xff, stdout);
