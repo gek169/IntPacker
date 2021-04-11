@@ -19,7 +19,7 @@ tokens-
 7 - 255 = token
 */
 
-int main_unpack(){
+void main_unpack(){
 	while(!feof(stdin)){
 		unsigned char tok = fgetc(stdin);
 		if(tok == 0) {
@@ -84,13 +84,13 @@ int main_unpack(){
 }
 
 
-int main_pack(){
+void main_pack(){
 	long signed_int;
 	unsigned long unsigned_int;
 	unsigned long lenout;
 	while(!feof(stdin)){
 		char* line = read_until_terminator_alloced(stdin, &lenout, '\n', 10);
-		if(line == NULL) return 1; //Failed malloc.
+		if(line == NULL) return; //Failed malloc.
 		if(strprefix("#", line)) goto end;
 		if(strlen(line) < 1 || strprefix("NOP", line) ||
 		strprefix("nop", line)){
@@ -180,8 +180,10 @@ int main_pack(){
 
 int main(int argc, char** argv){
 	(void)argv;
-	if(argc < 2)
-		return main_pack();
+	if(argc < 2){
+		main_pack();
+		return 0;
+	}
 	puts("#AUTOMATICALLY UNPACKED FILE- GENERATED FROM TOKENIZED FORM");
-	return main_unpack();
+	main_unpack(); return 0;
 }
